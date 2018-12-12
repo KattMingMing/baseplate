@@ -84,12 +84,12 @@ def make_client(service_name, tracing_endpoint=None, tracing_queue_name=None,
         for.
     """
     if tracing_queue_name:
-        logger.info("Recording spans to queue %s", tracing_queue_name)
+        logger.info("Recording spans to queue {}".format(tracing_queue_name))
         recorder = SidecarRecorder(tracing_queue_name)
     elif tracing_endpoint:
         warn_deprecated("In-app trace publishing is deprecated in favor of the sidecar model.")
         remote_addr = '%s:%s' % tracing_endpoint.address
-        logger.info("Recording spans to %s", remote_addr)
+        logger.info("Recording spans to {}".format(remote_addr))
         recorder = RemoteRecorder(
             remote_addr,
             num_conns=num_conns,
@@ -126,6 +126,7 @@ class TraceBaseplateObserver(BaseplateObserver):
         where metrics will be sent.
 
     """
+
     def __init__(self, tracing_client):
         self.service_name = tracing_client.service_name
         self.sample_rate = tracing_client.sample_rate
@@ -133,7 +134,7 @@ class TraceBaseplateObserver(BaseplateObserver):
         try:
             self.hostname = socket.gethostbyname(socket.gethostname())
         except socket.gaierror as e:
-            logger.error("Hostname could not be resolved, error=%s", e)
+            logger.error("Hostname could not be resolved, error={}".format(e))
             self.hostname = 'undefined'
 
     @classmethod
@@ -166,6 +167,7 @@ class TraceSpanObserver(SpanObserver):
     This observer implements the client-side span portion of a
     Zipkin request trace.
     """
+
     def __init__(self, service_name, hostname, span, recorder):
         self.service_name = service_name
         self.hostname = hostname
@@ -283,6 +285,7 @@ class TraceLocalSpanObserver(TraceSpanObserver):
     :param baseplate.core.Span span: Local span for this observer.
     :param baseplate.diagnostics.tracing.Recorder: Recorder for span trace.
     """
+
     def __init__(self,
                  service_name,
                  component_name,
@@ -430,11 +433,12 @@ class BaseBatchRecorder(object):
         try:
             self.span_queue.put_nowait(span)
         except Exception as e:
-            self.logger.error("Failed adding span to recording queue: %s", e)
+            self.logger.error("Failed adding span to recording queue: {}".format(e))
 
 
 class LoggingRecorder(BaseBatchRecorder):
     """Interface for recording spans to the debug log."""
+
     def __init__(self, max_queue_size=50000,
                  num_workers=5,
                  max_span_batch=100,
@@ -449,11 +453,12 @@ class LoggingRecorder(BaseBatchRecorder):
     def flush_func(self, spans):
         """Write a set of spans to debug log."""
         for span in spans:
-            self.logger.debug("Span recording: %s", span)
+            self.logger.debug("Span recording: {}".format(span))
 
 
 class NullRecorder(BaseBatchRecorder):
     """Noop recorder."""
+
     def __init__(self, max_queue_size=50000,
                  num_workers=5,
                  max_span_batch=100,
@@ -475,6 +480,7 @@ class RemoteRecorder(BaseBatchRecorder):
     thread worker to process. It currently does not shut down gracefully -
     in the event of parent process exit, any remaining spans will be discarded.
     """
+
     def __init__(self, endpoint,
                  num_conns=5,
                  num_workers=5,
@@ -506,7 +512,7 @@ class RemoteRecorder(BaseBatchRecorder):
                 timeout=1,
             )
         except RequestException as e:
-            self.logger.error("Error flushing spans: %s", e)
+            self.logger.error("Error flushing spans: {}".format(e))
 
 
 class TraceTooLargeError(Exception):
@@ -527,6 +533,7 @@ class SidecarRecorder(BaseBatchRecorder):
     The SidecarRecorder serializes spans to a string representation before
     adding them to the queue.
     """
+
     def __init__(self, queue_name):
         self.queue = MessageQueue(
             "/traces-" + queue_name,

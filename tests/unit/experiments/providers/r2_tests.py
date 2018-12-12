@@ -50,7 +50,7 @@ def generate_content(num_content, content_type):
     elif content_type == "comment":
         id_fmt = "t1_%s"
     else:
-        raise ValueError("Unknown content type: %s", content_type)
+        raise ValueError("Unknown content type: {}".format(content_type))
 
     for i in range(num_content):
         content.append(dict(id=id_fmt % i, type=content_type))
@@ -187,7 +187,7 @@ class TestR2Experiment(unittest.TestCase):
             # raw difference scales better as we change num_users.
             percent_equal = float(actual) / expected
             self.assertAlmostEqual(percent_equal, 1.0, delta=.10,
-                                   msg='bucket: %s' % bucket)
+                                   msg='bucket: {}'.format(bucket))
 
     @unittest.skipIf(os.environ.get("CI") != "true",
                      "test takes too long to run for normal local iteration")
@@ -246,7 +246,7 @@ class TestR2Experiment(unittest.TestCase):
             # raw difference scales better as we change NUM_USERS.
             percent_equal = float(actual) / expected
             self.assertAlmostEqual(percent_equal, 1.0, delta=.10,
-                                   msg='bucket: %s' % bucket)
+                                   msg='bucket: {}'.format(bucket))
 
     def test_choose_variant(self):
         control_only = parse_experiment({
@@ -438,7 +438,7 @@ class TestR2Experiment(unittest.TestCase):
 
 
 @unittest.skipIf(os.environ.get("CI") != "true",
-                     "test takes too long to run for normal local iteration")
+                 "test takes too long to run for normal local iteration")
 class TestSimulatedR2Experiments(unittest.TestCase):
 
     def setUp(self):

@@ -67,6 +67,7 @@ class FileWatcher(object):
         for the watched file to become available (defaults to not blocking).
 
     """
+
     def __init__(self, path, parser, timeout=None):
         self._path = path
         self._parser = parser
@@ -86,7 +87,7 @@ class FileWatcher(object):
                 else:
                     break
 
-                logging.warning("%s: file not yet available. sleeping.", path)
+                logging.warning("{}: file not yet available. sleeping.".format(path))
             else:
                 raise WatchedFileNotAvailableError(self._path,
                     "timed out. last error was: %s" % last_error.inner)

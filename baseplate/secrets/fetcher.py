@@ -112,7 +112,7 @@ def load_nonce():
         with open(NONCE_FILENAME, "r") as f:
             return f.read()
     except IOError as exc:
-        logger.debug("Nonce not found: %s.", exc)
+        logger.debug("Nonce not found: {}.".format(exc))
         return None
 
 
@@ -131,6 +131,7 @@ def ttl_to_time(ttl):
 
 class VaultClientFactory(object):
     """Factory that makes authenticated clients."""
+
     def __init__(self, base_url, role, auth_type, mount_point):
         self.base_url = base_url
         self.role = role
@@ -265,6 +266,7 @@ class VaultClient(object):
     get a new client from the factory.
 
     """
+
     def __init__(self, session, base_url, token, token_expiration):
         self.session = session
         self.base_url = base_url
@@ -377,6 +379,7 @@ def main():
             time_til_expiration = soonest_expiration - datetime.datetime.utcnow()
             time_to_sleep = time_til_expiration - VAULT_TOKEN_PREFETCH_TIME
             time.sleep(max(int(time_to_sleep.total_seconds()), 1))
+
 
 if __name__ == "__main__":
     main()
